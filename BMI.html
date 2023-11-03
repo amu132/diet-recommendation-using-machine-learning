@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dash.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI and Body Fat Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #000;
+        }
+        header {
+            background-color: #4CAF50;
+            color: #fff;
+            text-align: center;
+            padding: 1em 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .chart-container {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .table-container {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            color: #000;
+        }
+        th {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            margin: 5px;
+            width: 20%;
+        }
+        input[type="button"] {
+            padding: 8px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        tr {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BMI and Body Fat Calculator</h1>
+        <!-- BMI Calculator Inputs -->
+        <label for="age">Age (years):</label>
+        <input type="number" id="age">
+        <br><br>
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" step="0.01">
+        <br><br>
+        <label for="height">Height (m):</label>
+        <input type="number" id="height" step="0.01">
+        <br><br>
+        <button onclick="calculateBMI()">Calculate BMI</button>
+        <!-- Body Fat Calculator Inputs -->
+        <br><br>
+        <label for="gender">Gender:</label>
+        <input type="radio" id="male" name="gender" value="male" required>
+        <label for="male">Male</label>
+        <input type="radio" id="female" name="gender" value="female">
+        <label for="female">Female</label>
+        <br><br>
+        <label for="waist">Waist (cm):</label>
+        <input type="number" id="waist" step="0.01">
+        <br><br>
+        <label for="hip">Hip (cm):</label>
+        <input type="number" id="hip" step="0.01">
+        <br><br>
+        <label for="neck">Neck (cm):</label>
+        <input type="number" id="neck" step="0.01">
+        <br><br>
+        <button onclick="calculateBodyFat()">Calculate Body Fat</button>
+        <!-- Output Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>BMI Category</th>
+                        <th>Body Fat Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="bmiCategory"></td>
+                        <td id="bodyFatPercentage"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        /* ... (same BMI functions as before) ... */
+        function calculateBMI() {
+            var age = parseFloat(document.getElementById('age').value);
+            var weight = parseFloat(document.getElementById('weight').value);
+            var height = parseFloat(document.getElementById('height').value);
+
+            if (isNaN(age) || isNaN(weight) || isNaN(height) || height === 0) {
+                alert("Please enter valid age, weight, and height values.");
+                return;
+            }
+
+            var bmi = weight / (height * height);
+            var bmiCategory = getBMICategory(bmi, age);
+
+            document.getElementById('bmiCategory').textContent = bmiCategory;
+        }
+
+        function getBMICategory(bmi, age) {
+            if (age < 18) {
+                return "BMI categories are not applicable for children and teenagers.";
+            } else if (bmi < 18.5) {
+                return "Underweight";
+            } else if (bmi >= 18.5 && bmi < 24.9) {
+                return "Normal Weight";
+            } else if (bmi >= 25 && bmi < 29.9) {
+                return "Overweight";
+            } else {
+                return "Obese";
+            }
+        }
+        
+        function calculateBodyFat() {
+            var gender = document.querySelector('input[name="gender"]:checked').value;
+            var waist = parseFloat(document.getElementById('waist').value);
+            var hip = parseFloat(document.getElementById('hip').value);
+            var neck = parseFloat(document.getElementById('neck').value);
+            var height = parseFloat(document.getElementById('height').value);
+
+            if (isNaN(waist) || isNaN(hip) || (gender == "male" && isNaN(neck))) {
+                alert("Please enter valid waist, hip, and neck values.");
+                return;
+            }
+
+            var bodyFat;
+
+            if (gender == "male") {
+                bodyFat = 495 / (1.0324 - 0.19077 * (Math.log10(waist - neck)) + 0.15456 * (Math.log10(height * 100))) - 450;
+            } else {
+                bodyFat = 495 / (1.29579 - 0.35004 * (Math.log10(waist + hip - neck)) + 0.22100 * (Math.log10(height * 100))) - 450;
+            }
+
+            document.getElementById('bodyFatPercentage').textContent = bodyFat.toFixed(2) + "% Body Fat";
+        }
+    </script>
+</body>
+</html>
