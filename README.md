@@ -40,4 +40,4 @@ License
 Distributed under the MIT License. See LICENSE for more information.
 
 Contact
-Your Name - amoghgaikwad773@gmail.com
+ - amoghgaikwad773@gmail.com
